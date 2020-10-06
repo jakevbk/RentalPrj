@@ -21,8 +21,10 @@ public class ListModel extends AbstractTableModel {
     private String[] columnNamesCurrentRentals = {"Renter\'s Name", "Est. Cost",
             "Rented On", "Due Date ", "Console", "Name of the Game"};
 
+// I added "Due Date"
     private String[] columnNamesforRented = {"Renter\'s Name", "Rented On Date",
-            "Actual date returned ", "Est. Cost", " Real Cost"};
+        "Due Date",
+             "Actual date returned ", "Est. Cost", " Real Cost"};
 
     private DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -164,6 +166,8 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+
+    //i added case 2 and incremented each case after by 1
     private Object rentedOutScreen(int row, int col) {
         switch (col) {
             case 0:
@@ -172,15 +176,20 @@ public class ListModel extends AbstractTableModel {
             case 1:
                 return (formatter.format(fileredListRentals.get(row).rentedOn.
                         getTime()));
+
             case 2:
+                return (formatter.format(fileredListRentals.get(row).dueBack.
+                    getTime()));
+
+            case 3:
                 return (formatter.format(fileredListRentals.get(row).
                         actualDateReturned.getTime()));
 
-            case 3:
+            case 4:
                 return (fileredListRentals.
                         get(row).getCost(fileredListRentals.get(row).dueBack));
 
-            case 4:
+            case 5:
                 return (fileredListRentals.
                         get(row).getCost(fileredListRentals.get(row).
                         actualDateReturned
