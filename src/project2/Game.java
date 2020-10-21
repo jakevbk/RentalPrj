@@ -2,6 +2,7 @@ package project2;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -46,6 +47,7 @@ public class Game extends Rental {
         this.console = console;
     }
 
+
     @Override
     public double getCost(GregorianCalendar dueBack) {
 
@@ -65,20 +67,42 @@ public class Game extends Rental {
         //
 
         GregorianCalendar gTemp = new GregorianCalendar();
-        double cost = 5;
+        double cost = 3;
         //        Date d = dueBack.getTime();
         //        gTemp.setTime(d);
 
-        gTemp = (GregorianCalendar) dueBack.clone();     //  gTemp = dueBack;  deos not work!!
-        gTemp.add(Calendar.DATE, -1);             // this subtracts one day from gTemp
+        gTemp = (GregorianCalendar) dueBack.clone();     //  gTemp = dueBack;  does not work!!
+       // gTemp.add(Calendar.DATE, -1);             // this subtracts one day from gTemp
 
         // these lines will help with debugging
         DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         System.out.println(formatter.format(gTemp.getTime()));
         System.out.println(formatter.format(rentedOn.getTime()));
+        System.out.println(formatter.format(dueBack.getTime()));
 
         // more code here
+        for(int days = 0; days< 7; days++){
+            gTemp.add(Calendar.DATE, -1);
+        }
 
+        while(gTemp.after(rentedOn)){
+            cost += .50;
+
+            gTemp.add(Calendar.DATE, -1);
+        }
+        if(getConsole() == null){
+                cost = cost;
+            }
+            if (getConsole() != null ) {
+                this.console.setRentedOn(rentedOn);
+
+                System.out.println("Cost before console: " + cost);
+
+                cost += this.console.getCost(dueBack);
+
+                System.out.println("cost " + this.console.getCost(dueBack));
+                System.out.println("Total: " + cost);
+            }
         return cost;
     }
 

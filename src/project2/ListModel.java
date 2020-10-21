@@ -1,10 +1,15 @@
 package project2;
 
+import javafx.util.converter.LocalDateStringConverter;
+
 import javax.swing.table.AbstractTableModel;
 import java.io.*;
+import java.lang.management.GarbageCollectorMXBean;
+import java.net.SocketOption;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,11 +72,43 @@ public class ListModel extends AbstractTableModel {
                 break;
 
             case SortByGameConsole:
-                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream().
-                        filter(n -> n.actualDateReturned == null)
+                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                        .filter(n -> n.actualDateReturned == null)
                         .collect(Collectors.toList());
 
-                // Your code goes here.
+//                // Your code goes here.
+//                fileredListRentals.stream()
+//                        .map(n -> { if(n.getCost(n.getDueBack()) >=50)
+//                            n.setNameOfRenter(n.getNameOfRenter().toUpperCase());
+//                            return n;
+//                        })
+//
+//                        .collect(Collectors.toList());
+//
+//                Collections.sort(fileredListRentals, new Comparator<Rental>() {
+//                    public int compare(Rental o1, Rental o2) {
+//                        if (o1.getClass() == Game.class) {
+//                            return o1.getDueBack().compareTo(o2.getDueBack());
+//                        } else {
+//                            return o2.getDueBack().compareTo(o1.getDueBack());
+//                        }
+//                    }
+//                });
+//
+//                Collections.sort(fileredListRentals, new Comparator<Rental>() {
+//                    public int compare(Rental o1, Rental o2) {
+//                        if (o1.getClass() == Game.class) {
+//                            return o1.getNameOfRenter().compareTo(o2.getNameOfRenter());
+//                        } else {
+//                            return o2.getNameOfRenter().compareTo(o1.getNameOfRenter());
+//                        }
+//                    }
+//                });
+
+
+                //Collections.sort(fileredListRentals, Comparator.comparing(Rental::getDueBack));
+
+
 
                 break;
 
@@ -242,13 +279,44 @@ public class ListModel extends AbstractTableModel {
     }
 
     public boolean saveAsText(String filename) {
+        if (filename == null || filename.equals("")){
+            throw new IllegalArgumentException();
+        }
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(
                     new FileWriter(filename)));
+            int size = fileredListRentals.size();
             out.println(listOfRentals.size());
             for (int i = 0; i < listOfRentals.size(); i++) {
                 Rental Unit = listOfRentals.get(i);
                 out.println(Unit.getClass().getName());
+                out.println(Unit.getNameOfRenter());
+                out.println(formatter.format(Unit.rentedOn.getTime()));
+                out.println(formatter.format(Unit.dueBack.getTime()));
+
+                if(Unit instanceof Game){
+                    if(((Game) Unit).getConsole() != null) {
+                        out.println(((Game) Unit).getConsole().getConsoleType());
+                        out.println(((Game) Unit).getNameGame());
+                    }
+                    else{
+                        out.println("NoSelection");
+                        out.println(((Game) Unit).getNameGame());
+                    }
+                }
+
+                else if(Unit instanceof Console){
+                    out.println(((Console) Unit).getConsoleType());
+                    out.println("no game");
+                }
+
+
+                if(Unit.getActualDateReturned() == null){
+                    out.println(Unit.actualDateReturned);
+                    }
+                else{
+                    out.println(formatter.format(Unit.actualDateReturned.getTime()));
+                }
 
                 // more code here
 
@@ -262,12 +330,79 @@ public class ListModel extends AbstractTableModel {
 
     public void loadFromText(String filename) {
         listOfRentals.clear();
+        SimpleDateFormat df = new SimpleDateFormat(("MM/dd/yyyy"));
 
         try {
             Scanner scanner = new Scanner(new File(filename));
             int count = Integer.parseInt(scanner.nextLine().trim());
+            System.out.println(count);
+
             for (int i = 0; i < count; i++) {
+                GregorianCalendar use1 = new GregorianCalendar();
+                GregorianCalendar use2 = new GregorianCalendar();
+                GregorianCalendar use3 = new GregorianCalendar();
+
                 String type = scanner.nextLine().trim().toLowerCase();
+                String userName = scanner.nextLine();
+                Date d1 = df.parse(scanner.nextLine().trim());
+                use1.setTime(d1);
+                Date d2 = df.parse(scanner.nextLine());
+                use2.setTime(d2);
+                ConsoleTypes console = ConsoleTypes.valueOf((scanner.nextLine().trim()));
+                String game = (scanner.nextLine());
+                String returned = (scanner.nextLine());
+                Date d3;
+
+                if(type.equalsIgnoreCase("project2.Game")) {
+                    Console temp = new Console();
+                    temp.setConsoleType(console);
+
+                    Game unit = new Game();
+                    unit.setNameOfRenter(userName);
+                    unit.setRentedOn(use1);
+                    unit.setDueBack(use2);
+                    if(temp.getConsoleType() != ConsoleTypes.NoSelection) {
+                        unit.setConsole(temp);
+                    }
+                    else{
+                        unit.setConsole(null);
+                    }
+                    if(game.contains("no game")) {
+                        unit.setNameGame(null);
+                    }
+                    else{
+                        unit.setNameGame(game);
+                    }
+
+                    if (returned.equalsIgnoreCase("null")){
+                        unit.setActualDateReturned(null);
+                    }
+                    else {
+                        d3 = df.parse(returned);
+                        use3.setTime(d3);
+                        unit.setActualDateReturned(use3);
+                    }
+                    listOfRentals.add(unit);
+                }
+                else{
+                    Console unit = new Console();
+
+                    unit.setNameOfRenter(userName);
+                    unit.setRentedOn(use1);
+                    unit.setDueBack(use2);
+                    unit.setConsoleType(console);
+
+                    if (returned.equalsIgnoreCase("null")){
+                        unit.setActualDateReturned(null);
+                    }
+                    else {
+                        d3 = df.parse(returned);
+                        use3.setTime(d3);
+                        unit.setActualDateReturned(use3);
+                    }
+                    listOfRentals.add(unit);
+                }
+
 
                 // more code here
 
@@ -275,7 +410,7 @@ public class ListModel extends AbstractTableModel {
             scanner.close();
 
         } catch (Exception ex) {
-            throw new RuntimeException("Loading text file problem" + display);
+           throw new RuntimeException("Loading text file problem" + display);
 
         }
         UpdateScreen();

@@ -156,7 +156,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         if(e.getSource() == reserveGameItem){
             Game tentOnly = new Game();
             RentGameDialog dialog = new RentGameDialog(this, tentOnly);
-            if(dialog.getCloseStatus() == RentGameDialog.OK){
+            if(dialog.getCloseStatus() == RentGameDialog.OK) {
                 DList.add(tentOnly);
             }
         }
