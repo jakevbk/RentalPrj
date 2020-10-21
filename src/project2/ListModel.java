@@ -49,8 +49,16 @@ public class ListModel extends AbstractTableModel {
     private void UpdateScreen() {
         switch (display) {
             case CurrentRentalStatus:
-                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream().
-                        filter(n -> n.actualDateReturned == null)
+                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                        .filter(n -> n.actualDateReturned == null)
+
+                        //is this the way to uncapitalize??
+                        .map(n -> { if(n.getCost(n.getDueBack()) > 50) {
+                            n.setNameOfRenter(n.getNameOfRenter().toLowerCase());
+                            n.setNameOfRenter(Character.toUpperCase(n.getNameOfRenter().charAt(0))+n.getNameOfRenter().substring(1));
+                        }
+                            return n;
+                        })
                         .collect(Collectors.toList());
 
                 // Note: This uses Lambda function
@@ -60,6 +68,14 @@ public class ListModel extends AbstractTableModel {
             case RetendItems:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream().
                         filter(n -> n.getActualDateReturned() != null)
+
+                        //is this the way to uncapitalize??
+                        .map(n -> { if(n.getCost(n.getDueBack()) > 50) {
+                            n.setNameOfRenter(n.getNameOfRenter().toLowerCase());
+                            n.setNameOfRenter(Character.toUpperCase(n.getNameOfRenter().charAt(0))+n.getNameOfRenter().substring(1));
+                        }
+                            return n;
+                        })
                         .collect(Collectors.toList());
 
                 Collections.sort(fileredListRentals, new Comparator<Rental>() {
@@ -71,44 +87,43 @@ public class ListModel extends AbstractTableModel {
 
                 break;
 
+                //talked to prof 10/21/2020 in office hours.
+            // Can sort by renters name or by dueBack. His code sorts
+            // dueBack, so that is what I did.
+            //This matches the output screen
             case SortByGameConsole:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
                         .filter(n -> n.actualDateReturned == null)
                         .collect(Collectors.toList());
 
 //                // Your code goes here.
-//                fileredListRentals.stream()
-//                        .map(n -> { if(n.getCost(n.getDueBack()) >=50)
-//                            n.setNameOfRenter(n.getNameOfRenter().toUpperCase());
-//                            return n;
-//                        })
-//
-//                        .collect(Collectors.toList());
-//
-//                Collections.sort(fileredListRentals, new Comparator<Rental>() {
-//                    public int compare(Rental o1, Rental o2) {
-//                        if (o1.getClass() == Game.class) {
-//                            return o1.getDueBack().compareTo(o2.getDueBack());
-//                        } else {
-//                            return o2.getDueBack().compareTo(o1.getDueBack());
-//                        }
-//                    }
-//                });
-//
-//                Collections.sort(fileredListRentals, new Comparator<Rental>() {
-//                    public int compare(Rental o1, Rental o2) {
-//                        if (o1.getClass() == Game.class) {
-//                            return o1.getNameOfRenter().compareTo(o2.getNameOfRenter());
-//                        } else {
-//                            return o2.getNameOfRenter().compareTo(o1.getNameOfRenter());
-//                        }
-//                    }
-//                });
 
+                Collections.sort(fileredListRentals, new Comparator<Rental>() {
+                    public int compare(Rental o1, Rental o2) {
+                        if (o1.getClass() == Game.class && o2.getClass() == Game.class) {
+                            return o1.getDueBack().compareTo(o2.getDueBack());
+                        }
+                        return 0;
+                    }
+                });
 
-                //Collections.sort(fileredListRentals, Comparator.comparing(Rental::getDueBack));
+                Collections.sort(fileredListRentals, new Comparator<Rental>() {
+                    public int compare(Rental o1, Rental o2) {
+                        if (o1.getClass() == Console.class && o2.getClass() == Console.class) {
+                            return o1.getDueBack().compareTo(o2.getDueBack());
+                        }
+                        return 0;
+                    }
+                });
 
-
+                fileredListRentals.stream()
+                    .map(arg -> { if(arg.getCost(arg.getDueBack()) > 50) {
+                        arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
+                        arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
+                    }
+                        return arg;
+                    })
+                        .collect(Collectors.toList());
 
                 break;
 
@@ -330,8 +345,6 @@ public class ListModel extends AbstractTableModel {
 
     public void loadFromText(String filename) {
         listOfRentals.clear();
-        SimpleDateFormat df = new SimpleDateFormat(("MM/dd/yyyy"));
-
         try {
             Scanner scanner = new Scanner(new File(filename));
             int count = Integer.parseInt(scanner.nextLine().trim());
@@ -344,9 +357,9 @@ public class ListModel extends AbstractTableModel {
 
                 String type = scanner.nextLine().trim().toLowerCase();
                 String userName = scanner.nextLine();
-                Date d1 = df.parse(scanner.nextLine().trim());
+                Date d1 = formatter.parse(scanner.nextLine().trim());
                 use1.setTime(d1);
-                Date d2 = df.parse(scanner.nextLine());
+                Date d2 = formatter.parse(scanner.nextLine());
                 use2.setTime(d2);
                 ConsoleTypes console = ConsoleTypes.valueOf((scanner.nextLine().trim()));
                 String game = (scanner.nextLine());
@@ -378,7 +391,7 @@ public class ListModel extends AbstractTableModel {
                         unit.setActualDateReturned(null);
                     }
                     else {
-                        d3 = df.parse(returned);
+                        d3 = formatter.parse(returned);
                         use3.setTime(d3);
                         unit.setActualDateReturned(use3);
                     }
@@ -396,22 +409,18 @@ public class ListModel extends AbstractTableModel {
                         unit.setActualDateReturned(null);
                     }
                     else {
-                        d3 = df.parse(returned);
+                        d3 = formatter.parse(returned);
                         use3.setTime(d3);
                         unit.setActualDateReturned(use3);
                     }
                     listOfRentals.add(unit);
                 }
-
-
                 // more code here
-
             }
             scanner.close();
 
         } catch (Exception ex) {
-           throw new RuntimeException("Loading text file problem" + display);
-
+            throw new RuntimeException("Loading text file problem" + display);
         }
         UpdateScreen();
     }
