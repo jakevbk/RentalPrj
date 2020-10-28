@@ -113,13 +113,17 @@ public class RentGameDialog extends JDialog implements ActionListener {
                 System.out.print("error here");
             }
 
-            if(txtRenterName.getText().isEmpty())
-                JOptionPane.showMessageDialog(null,"Who's renting?");
+            if(txtRenterName.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Who's renting?");
+                closeStatus = CANCEL;
+            }
             else
                 game.setNameOfRenter(txtRenterName.getText());
 
-            if(txtGameTitle.getText().isEmpty())
-                JOptionPane.showMessageDialog(null,"What game?");
+            if(txtGameTitle.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "What game?");
+                closeStatus = CANCEL;
+            }
             else
                 game.setNameGame(txtGameTitle.getText());
 
@@ -141,7 +145,12 @@ public class RentGameDialog extends JDialog implements ActionListener {
 
 
         // make the dialog disappear
-        dispose();
+        if(closeStatus == OK) {
+            dispose();
+        }
+        if(button == cancelButton){
+            dispose();
+        }
     }
 
     /**************************************************************

@@ -51,21 +51,6 @@ public class Game extends Rental {
     @Override
     public double getCost(GregorianCalendar dueBack) {
 
-        // Do not use this approach
-        //String dateBeforeString = "2017-05-24";
-        //	String dateAfterString = "2017-07-29";
-        //
-        //	//Parsing the date
-        //	LocalDate dateBefore = LocalDate.parse(dateBeforeString);
-        //	LocalDate dateAfter = LocalDate.parse(dateAfterString);
-        //
-        //	//calculating number of days in between
-        //	long noOfDaysBetween = ChronoUnit.DAYS.between(dateBefore, dateAfter);
-        //
-        //	//displaying the number of days
-        //	System.out.println(noOfDaysBetween);
-        //
-
         GregorianCalendar gTemp = new GregorianCalendar();
         double cost = 3;
         //        Date d = dueBack.getTime();
@@ -92,17 +77,17 @@ public class Game extends Rental {
         }
         if(getConsole() == null){
                 cost = cost;
-            }
-            if (getConsole() != null ) {
+        }
+        if (getConsole() != null ) {
                 this.console.setRentedOn(rentedOn);
-
-                System.out.println("Cost before console: " + cost);
-
                 cost += this.console.getCost(dueBack);
+        }
+        //This is the extra credit where you can captialize name
+        //must also have in Console.java getCost()
+//        if(cost> 50){
+//            setNameOfRenter(getNameOfRenter().toUpperCase());
+//        }
 
-                System.out.println("cost " + this.console.getCost(dueBack));
-                System.out.println("Total: " + cost);
-            }
         return cost;
     }
 

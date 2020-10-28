@@ -75,11 +75,13 @@ public class ReturnedOnDialog extends JDialog implements ActionListener {
 
 		JButton button = (JButton) e.getSource();
 
+
 		// if OK clicked the fill the object
 		if (button == okButton) {
 			// save the information in the object
 			closeStatus = OK;
 			SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+			df.setLenient(false);
 			GregorianCalendar gTemp = new GregorianCalendar();
 
 			Date d = null;
@@ -88,14 +90,31 @@ public class ReturnedOnDialog extends JDialog implements ActionListener {
 				gTemp.setTime(d);
 				unit.setActualDateReturned(gTemp);
 
+				if(unit.actualDateReturned.before(unit.getRentedOn())){
+					throw new IllegalArgumentException();
+				}
+
 			} catch (ParseException e1) {
 				//   Do some thing good here, what that is, I am not sure.
+				JOptionPane.showMessageDialog(null,"Date must be formatted properly MM/dd/yyyy");
+				closeStatus = CANCEL;
+			}
+			catch (IllegalArgumentException e2) {
+				//   Do some thing good here, what that is, I am not sure.
+				JOptionPane.showMessageDialog(null,"Can't return before rented try again");
+				closeStatus = CANCEL;
 			}
 
 		}
 
 		// make the dialog disappear
-		dispose();
+		if(closeStatus == OK) {
+			dispose();
+		}
+
+		if(button == cancelButton){
+			dispose();
+		}
 	}
 
 	/**************************************************************

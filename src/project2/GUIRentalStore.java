@@ -169,12 +169,14 @@ public class GUIRentalStore extends JFrame implements ActionListener {
                 Rental unit = DList.get(index);
                 ReturnedOnDialog dialog = new ReturnedOnDialog(this, unit);
 
-                JOptionPane.showMessageDialog(null,
-                        "  Be sure to thank " + unit.getNameOfRenter() +
-                        "\n for renting with us and the price is:  " +
-                        unit.getCost(unit.getActualDateReturned()) +
-                        " dollars");
-                DList.upDate(index, unit);
+                if(dialog.getCloseStatus() == ReturnedOnDialog.OK) {
+                    JOptionPane.showMessageDialog(null,
+                            "  Be sure to thank " + unit.getNameOfRenter() +
+                                    "\n for renting with us and the price is:  " +
+                                    unit.getCost(unit.getActualDateReturned()) +
+                                    " dollars");
+                    DList.upDate(index, unit);
+                }
             }
         }
     }

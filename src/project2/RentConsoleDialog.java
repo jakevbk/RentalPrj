@@ -109,6 +109,7 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
                 console.setDueBack(gregTemp);
 
             } catch (ParseException e1) {
+                throw new IllegalArgumentException();
                 //   Do some thing good here, what that is, I am not sure.
             }
 
@@ -121,7 +122,12 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
         }
 
         // make the dialog disappear
-        dispose();
+        if(closeStatus == OK) {
+            dispose();
+        }
+        if(button == cancelButton){
+            dispose();
+        }
     }
 
     /**************************************************************

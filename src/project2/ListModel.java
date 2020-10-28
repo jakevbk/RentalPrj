@@ -47,6 +47,11 @@ public class ListModel extends AbstractTableModel {
     }
 
     private void UpdateScreen() {
+        ArrayList<String> ogName = new ArrayList<>();
+        for (int i = 0; i < listOfRentals.size() - 1; ++i){
+            if(listOfRentals.get(i).getCost(listOfRentals.get(i).getDueBack())>50)
+                ogName.add(listOfRentals.get(i).getNameOfRenter());
+    }
         switch (display) {
             case CurrentRentalStatus:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
@@ -66,9 +71,8 @@ public class ListModel extends AbstractTableModel {
                 break;
 
             case RetendItems:
-                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream().
-                        filter(n -> n.getActualDateReturned() != null)
-
+                fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                        .filter(n -> n.getActualDateReturned() != null)
                         //is this the way to uncapitalize??
                         .map(n -> { if(n.getCost(n.getDueBack()) > 50) {
                             n.setNameOfRenter(n.getNameOfRenter().toLowerCase());
@@ -100,7 +104,7 @@ public class ListModel extends AbstractTableModel {
 
                 Collections.sort(fileredListRentals, new Comparator<Rental>() {
                     public int compare(Rental o1, Rental o2) {
-                        if (o1.getClass() == Game.class && o2.getClass() == Game.class) {
+                         if(o1 instanceof Game && o2 instanceof Game){
                             return o1.getDueBack().compareTo(o2.getDueBack());
                         }
                         return 0;
@@ -109,7 +113,7 @@ public class ListModel extends AbstractTableModel {
 
                 Collections.sort(fileredListRentals, new Comparator<Rental>() {
                     public int compare(Rental o1, Rental o2) {
-                        if (o1.getClass() == Console.class && o2.getClass() == Console.class) {
+                        if(o1 instanceof Console && o2 instanceof Console){
                             return o1.getDueBack().compareTo(o2.getDueBack());
                         }
                         return 0;
@@ -119,11 +123,11 @@ public class ListModel extends AbstractTableModel {
                 fileredListRentals.stream()
                     .map(arg -> { if(arg.getCost(arg.getDueBack()) > 50) {
                         arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
-                        arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
                     }
                         return arg;
                     })
                         .collect(Collectors.toList());
+
 
                 break;
 
