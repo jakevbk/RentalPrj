@@ -1,5 +1,15 @@
 package project2;
 
+/********************************************************
+ * Project 2
+ * @author Thanh Tran & Jacob VanBronkhorst
+ *
+ * A project for programming renting console and game system.
+ * The project needs to create
+ * and implement methods and properties for the system to work.
+ *
+ ********************************************************/
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,21 +21,60 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class RentConsoleDialog extends JDialog implements ActionListener {
+
+    /**
+     * Text field for renter name
+     */
     private JTextField txtRenterName;
+
+    /**
+     * Text field for date rented on
+     */
     private JTextField txtDateRentedOn;
+
+    /**
+     * text field for due date
+     */
     private JTextField txtDateDueDate;
+
+    /**
+     * Box for console type
+     */
     private JComboBox<ConsoleTypes> comBoxConsoleType;
+
+    /**
+     * Ok option button
+     */
     private JButton okButton;
+
+    /**
+     * Cancel option button
+     */
     private JButton cancelButton;
+
+    /**
+     * an int representing the option OK or CANCEL
+     */
     private int closeStatus;
+
+    /**
+     * an object type Console
+     */
     private Console console;
+
+    /**
+     * an integer represents Ok
+     */
     public static final int OK = 0;
+
+    /**
+     * an integer represents Cancel
+     */
     public static final int CANCEL = 1;
 
     /*********************************************************
      Instantiate a Custom Dialog as 'modal' and wait for the
      user to provide data and click on a button.
-
      @param parent reference to the JFrame application
      @param console an instantiated object to be filled with data
      *********************************************************/
@@ -85,6 +134,7 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
     /**************************************************************
      Respond to either button clicks
      @param e the action event that was just fired
+     @throws IllegalArgumentException if there errors
      **************************************************************/
     public void actionPerformed(ActionEvent e) {
 
@@ -109,8 +159,9 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
                 console.setDueBack(gregTemp);
 
             } catch (ParseException e1) {
+                System.out.print("error here");
                 throw new IllegalArgumentException();
-                //   Do some thing good here, what that is, I am not sure.
+
             }
 
             console.setNameOfRenter(txtRenterName.getText());
@@ -133,7 +184,6 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
     /**************************************************************
      Return a String to let the caller know which button
      was clicked
-
      @return an int representing the option OK or CANCEL
      **************************************************************/
     public int getCloseStatus(){
