@@ -1,5 +1,15 @@
 package project2;
 
+/********************************************************
+ * Project 2
+ * @author Thanh Tran & Jacob VanBronkhorst
+ *
+ * A project for programming renting console and game system.
+ * The project needs to create
+ * and implement methods and properties for the system to work.
+ *
+ ********************************************************/
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,22 +21,73 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class RentGameDialog extends JDialog implements ActionListener {
+
+    /**
+     * an int representing the option OK or CANCEL
+     */
     private int closeStatus;
 
+    /**
+     * Text field for renter name
+     */
     private JTextField txtRenterName;
+
+    /**
+     * Text field for date rented on
+     */
     private JTextField txtDateRentedOn;
+
+    /**
+     * text field for due date
+     */
     private JTextField txtDateDueDate;
+
+    /**
+     * text field for game name
+     */
     private JTextField txtGameTitle;
+
+    /**
+     * Box for console type
+     */
     private JComboBox<ConsoleTypes> comBoxConsoleType;
+
+    /**
+     * Ok option button
+     */
     private JButton okButton;
+
+    /**
+     * Cancel option button
+     */
     private JButton cancelButton;
 
+    /**
+     * an object type Console
+     */
     private Console console;
+
+    /**
+     * an object type Game
+     */
     private Game game;
 
+    /**
+     * an integer represents Ok
+     */
     public static final int OK = 0;
+
+    /**
+     * an integer represents Cancel
+     */
     public static final int CANCEL = 1;
 
+    /*********************************************************
+     Instantiate a Custom Dialog as 'modal' and wait for the
+     user to provide data and click on a button.
+     @param parent reference to the JFrame application
+     @param game an instantiated object to be filled with data
+     *********************************************************/
     public RentGameDialog(JFrame parent, Game game) {
         // call parent and create a 'modal' dialog
         super(parent, true);
@@ -82,6 +143,11 @@ public class RentGameDialog extends JDialog implements ActionListener {
         setVisible (true);
     }
 
+    /**************************************************************
+     Respond to either button clicks
+     @param e the action event that was just fired
+     @throws IllegalArgumentException if there errors
+     **************************************************************/
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) e.getSource();
 
@@ -109,8 +175,9 @@ public class RentGameDialog extends JDialog implements ActionListener {
 
 
             } catch (ParseException e1) {
-                //   Do some thing good here, what that is, I am not sure.
                 System.out.print("error here");
+                throw new IllegalArgumentException();
+
             }
 
             if(txtRenterName.getText().isEmpty()) {
@@ -139,7 +206,7 @@ public class RentGameDialog extends JDialog implements ActionListener {
                 gregTemp.setTime(d2);
                 temp.setDueBack(gregTemp);
 
-               game.setConsole(temp);
+                game.setConsole(temp);
             }
         }
 
@@ -156,7 +223,6 @@ public class RentGameDialog extends JDialog implements ActionListener {
     /**************************************************************
      Return a String to let the caller know which button
      was clicked
-
      @return an int representing the option OK or CANCEL
      **************************************************************/
 
@@ -164,4 +230,3 @@ public class RentGameDialog extends JDialog implements ActionListener {
         return closeStatus;
     }
 }
-
