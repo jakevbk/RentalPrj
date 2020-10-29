@@ -1,6 +1,17 @@
 package project2;
 
+/********************************************************
+ * Project 2
+ * @author Thanh Tran & Jacob VanBronkhorst
+ *
+ * A project for programming renting console and game system.
+ * The project needs to create
+ * and implement methods and properties for the system to work.
+ *
+ ********************************************************/
+
 import javafx.util.converter.LocalDateStringConverter;
+
 
 import javax.swing.table.AbstractTableModel;
 import java.io.*;
@@ -14,25 +25,43 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ListModel extends AbstractTableModel {
-    /** holds all the rentals */
+
+    /**
+     * An arraylist that holds all the rentals
+     */
     private ArrayList<Rental> listOfRentals;
 
-    /** holds only the rentals that are to be displayed */
+    /**
+     * holds only the rentals that are to be displayed
+     */
     private ArrayList<Rental> fileredListRentals;
 
-    /** current screen being displayed */
+    /**
+     *  current screen being displayed
+     *  */
     private ScreenDisplay display = ScreenDisplay.CurrentRentalStatus;
 
+    /**
+     * holds the column names for the current rentals
+     */
     private String[] columnNamesCurrentRentals = {"Renter\'s Name", "Est. Cost",
             "Rented On", "Due Date ", "Console", "Name of the Game"};
 
-// I added "Due Date"
+    /**
+     * holds the column names for the rented out
+     */
     private String[] columnNamesforRented = {"Renter\'s Name", "Rented On Date",
-        "Due Date",
-             "Actual date returned ", "Est. Cost", " Real Cost"};
+            "Due Date",
+            "Actual date returned ", "Est. Cost", " Real Cost"};
 
+    /**
+     *  type DateFormat object to format all the dates
+     */
     private DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
+    /**
+     *  A constructor that instantiate the arraylist and update current rental screen
+     */
     public ListModel() {
         display = ScreenDisplay.CurrentRentalStatus;
         listOfRentals = new ArrayList<>();
@@ -41,30 +70,41 @@ public class ListModel extends AbstractTableModel {
         createList();
     }
 
+    /**
+     * A method that update the current display status on screen
+     * @param selected an object of ScreenDisplay type
+     */
     public void setDisplay(ScreenDisplay selected) {
         display = selected;
         UpdateScreen();
     }
 
+    /**
+     * A method that helps to update the current rental status
+     * and current status with
+     * lambda and stream function
+     * @throws RuntimeException if there no chosen case
+     */
     private void UpdateScreen() {
         ArrayList<String> ogName = new ArrayList<>();
         for (int i = 0; i < listOfRentals.size() - 1; ++i){
             if(listOfRentals.get(i).getCost(listOfRentals.get(i).getDueBack())>50)
                 ogName.add(listOfRentals.get(i).getNameOfRenter());
-    }
+        }
         switch (display) {
+
             case CurrentRentalStatus:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
-                        .filter(n -> n.actualDateReturned == null)
+                        .filter(n -> n.actualDateReturned == null) // filter by items that have not been returned
 
-                        //is this the way to uncapitalize??
+                        //uncapitalize names of the rentals when return to current rental screen
                         .map(n -> { if(n.getCost(n.getDueBack()) > 50) {
                             n.setNameOfRenter(n.getNameOfRenter().toLowerCase());
                             n.setNameOfRenter(Character.toUpperCase(n.getNameOfRenter().charAt(0))+n.getNameOfRenter().substring(1));
                         }
                             return n;
                         })
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList()); // collect rental names to list
 
                 // Note: This uses Lambda function
                 Collections.sort(fileredListRentals, (n1, n2) -> n1.getNameOfRenter().compareTo(n2.nameOfRenter));
@@ -72,8 +112,8 @@ public class ListModel extends AbstractTableModel {
 
             case RetendItems:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
-                        .filter(n -> n.getActualDateReturned() != null)
-                        //is this the way to uncapitalize??
+                        .filter(n -> n.getActualDateReturned() != null) // filter by items that have been returned
+                        //uncapitalize the name of renter
                         .map(n -> { if(n.getCost(n.getDueBack()) > 50) {
                             n.setNameOfRenter(n.getNameOfRenter().toLowerCase());
                             n.setNameOfRenter(Character.toUpperCase(n.getNameOfRenter().charAt(0))+n.getNameOfRenter().substring(1));
@@ -83,6 +123,14 @@ public class ListModel extends AbstractTableModel {
                         .collect(Collectors.toList());
 
                 Collections.sort(fileredListRentals, new Comparator<Rental>() {
+                    /**
+                     *  An override method that compare names of the renters
+                     * @param n1 an object type rental
+                     * @param n2 an object type rental
+                     * @return 0 if both names are the same
+                     *        < 0 if this name is lexicographically less than the other name
+                     *        > 0 if this name is lexicographically greater than the other name
+                     */
                     @Override
                     public int compare(Rental n1, Rental n2) {
                         return n1.getNameOfRenter().compareTo(n2.nameOfRenter);
@@ -91,10 +139,9 @@ public class ListModel extends AbstractTableModel {
 
                 break;
 
-                //talked to prof 10/21/2020 in office hours.
-            // Can sort by renters name or by dueBack. His code sorts
-            // dueBack, so that is what I did.
-            //This matches the output screen
+
+            // sort by dueBack,
+            // sort game first then console
             case SortByGameConsole:
                 fileredListRentals = (ArrayList<Rental>) listOfRentals.stream()
                         .filter(n -> n.actualDateReturned == null)
@@ -104,7 +151,7 @@ public class ListModel extends AbstractTableModel {
 
                 Collections.sort(fileredListRentals, new Comparator<Rental>() {
                     public int compare(Rental o1, Rental o2) {
-                         if(o1 instanceof Game && o2 instanceof Game){
+                        if(o1 instanceof Game && o2 instanceof Game){
                             return o1.getDueBack().compareTo(o2.getDueBack());
                         }
                         return 0;
@@ -120,12 +167,12 @@ public class ListModel extends AbstractTableModel {
                     }
                 });
 
-                fileredListRentals.stream()
-                    .map(arg -> { if(arg.getCost(arg.getDueBack()) > 50) {
-                        arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
-                    }
-                        return arg;
-                    })
+                fileredListRentals.stream() // set the renter name to all uppercase
+                        .map(arg -> { if(arg.getCost(arg.getDueBack()) > 50) {
+                            arg.setNameOfRenter(arg.getNameOfRenter().toUpperCase());
+                        }
+                            return arg;
+                        })
                         .collect(Collectors.toList());
 
 
@@ -137,6 +184,12 @@ public class ListModel extends AbstractTableModel {
         fireTableStructureChanged();
     }
 
+    /**
+     * A method to get column names
+     * @param col number of column
+     * @return columnNamesCurrentRentals[col] an array type String with #col number of elements
+     *          columnNamesforRented[col] an array type String with #col number of elements
+     */
     @Override
     public String getColumnName(int col) {
         switch (display) {
@@ -150,6 +203,12 @@ public class ListModel extends AbstractTableModel {
         throw new RuntimeException("Undefined state for Col Names: " + display);
     }
 
+    /**
+     * A method co count the column on each screen
+     * @return columnNamesCurrentRentals.length size of the array
+     *         columnNamesforRented.length  size of the array
+     * @throws IllegalArgumentException if there no case reached
+     */
     @Override
     public int getColumnCount() {
         switch (display) {
@@ -164,11 +223,23 @@ public class ListModel extends AbstractTableModel {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * A method to get the number of row
+     * @return fileredListRentals.size() size of the filter array
+     */
     @Override
     public int getRowCount() {
         return fileredListRentals.size();
     }
 
+    /**
+     * A method to get the value of certain position
+     * @param row number of row
+     * @param col number of column
+     * @return currentParkScreen(row, col) value in current rental status
+     *         rentedOutScreen(row, col) value in returned screen
+     * @throws IllegalArgumentException if there no case reached
+     */
     @Override
     public Object getValueAt(int row, int col) {
         switch (display) {
@@ -183,6 +254,20 @@ public class ListModel extends AbstractTableModel {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * A method to get the value in current rental status
+     * @param row number of row
+     * @param col number of column
+     * @return case 0: name of the renter
+     *         case 1: due back cost
+     *         case 2: rent on date
+     *         case 3: "-" if due back equals to null
+     *                  due back date
+     *         case 4: console types if it is console
+     *                 "" if it is game
+     *         case 5: game name
+     * @throws RuntimeException if no case reached
+     */
     private Object currentParkScreen(int row, int col) {
         switch (col) {
             case 0:
@@ -223,7 +308,18 @@ public class ListModel extends AbstractTableModel {
     }
 
 
-    //i added case 2 and incremented each case after by 1
+    /**
+     *  A method to get value in the returned screen
+     * @param row number of row
+     * @param col number of column
+     * @return case 0: name of renter
+     *         case 1: rented on date
+     *         case 2: due back date
+     *         case 3: actual date return
+     *         case 4: cost on due back date
+     *         case 5: cost on actual date return
+     * @throws RuntimeException if no case reached
+     */
     private Object rentedOutScreen(int row, int col) {
         switch (col) {
             case 0:
@@ -235,7 +331,7 @@ public class ListModel extends AbstractTableModel {
 
             case 2:
                 return (formatter.format(fileredListRentals.get(row).dueBack.
-                    getTime()));
+                        getTime()));
 
             case 3:
                 return (formatter.format(fileredListRentals.get(row).
@@ -256,19 +352,38 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+    /**
+     *  A method to add a new rental
+     * @param a an object type Rental
+     */
     public void add(Rental a) {
         listOfRentals.add(a);
         UpdateScreen();
     }
 
+    /**
+     * A method to get the specific rental information from the array
+     * @param i index for the array
+     * @return value at specific index
+     */
     public Rental get(int i) {
         return fileredListRentals.get(i);
     }
 
+    /**
+     * A method to update screen
+     * @param index index
+     * @param unit an object type Rental
+     */
     public void upDate(int index, Rental unit) {
         UpdateScreen();
     }
 
+    /**
+     * A method to save the data into a filename
+     * @param filename filename to save data on
+     * @throws RuntimeException if it can not be saved
+     */
     public void saveDatabase(String filename) {
         try {
             FileOutputStream fos = new FileOutputStream(filename);
@@ -281,6 +396,12 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+    /**
+     * A method to load data from the file name
+     *
+     * @param filename a file of data
+     * @throws RuntimeException if it can not load data
+     */
     public void loadDatabase(String filename) {
         listOfRentals.clear();
 
@@ -297,6 +418,13 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+    /**
+     * A method to show how to save data into the file
+     * @param filename a file to save data
+     * @return true if the data can be saved without error
+     *         false if any errors happen
+     * @throws IllegalArgumentException if theres no file name
+     */
     public boolean saveAsText(String filename) {
         if (filename == null || filename.equals("")){
             throw new IllegalArgumentException();
@@ -332,7 +460,7 @@ public class ListModel extends AbstractTableModel {
 
                 if(Unit.getActualDateReturned() == null){
                     out.println(Unit.actualDateReturned);
-                    }
+                }
                 else{
                     out.println(formatter.format(Unit.actualDateReturned.getTime()));
                 }
@@ -347,6 +475,11 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+    /**
+     * A method to load data fromm text
+     * @param filename a file of data
+     * @throws RuntimeException if the data can not be loaded
+     */
     public void loadFromText(String filename) {
         listOfRentals.clear();
         try {
@@ -419,7 +552,7 @@ public class ListModel extends AbstractTableModel {
                     }
                     listOfRentals.add(unit);
                 }
-                // more code here
+
             }
             scanner.close();
 
@@ -429,6 +562,10 @@ public class ListModel extends AbstractTableModel {
         UpdateScreen();
     }
 
+    /**
+     * A method used to test out the code
+     * @throws RuntimeException if there errors in testing
+     */
     // used by instructor to test your code.  Please do not change
     public void createList() {
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
@@ -499,3 +636,5 @@ public class ListModel extends AbstractTableModel {
     }
 }
 
+  
+  
