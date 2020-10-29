@@ -1,5 +1,15 @@
 package project2;
 
+/********************************************************
+ * Project 2
+ * @author Thanh Tran & Jacob VanBronkhorst
+ *
+ * A project for programming renting console and game system.
+ * The project needs to create
+ * and implement methods and properties for the system to work.
+ *
+ ********************************************************/
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
@@ -17,9 +27,21 @@ public class Game extends Rental {
      */
     private Console console;
 
+    /**
+     * A constructor for Game class
+     */
     public Game() {
     }
 
+    /**
+     * A constructor that initialize the rental information
+     * @param nameOfRenter name of renter
+     * @param rentedOn rent on date
+     * @param dueBack due back date
+     * @param actualDateReturned actual date return
+     * @param nameGame name of the game
+     * @param console console type
+     */
     public Game(String nameOfRenter,
                 GregorianCalendar rentedOn,
                 GregorianCalendar dueBack,
@@ -31,23 +53,43 @@ public class Game extends Rental {
         this.console = console;
     }
 
+    /**
+     * A method to get the game name
+     * @return nameGame name of the game
+     */
     public String getNameGame() {
         return nameGame;
     }
 
+    /**
+     * A method to set the game name
+     * @param nameGame name of the game
+     */
     public void setNameGame(String nameGame) {
         this.nameGame = nameGame;
     }
 
+    /**
+     * A method to get the console type
+     * @return console
+     */
     public Console getConsole() {
         return console;
     }
 
+    /**
+     * A method to set the console type
+     * @param console
+     */
     public void setConsole(Console console) {
         this.console = console;
     }
 
-
+    /**
+     * A method to calculate the cost for due back date
+     * @param dueBack due back date
+     * @return cost estimate for return date
+     */
     @Override
     public double getCost(GregorianCalendar dueBack) {
 
@@ -56,8 +98,8 @@ public class Game extends Rental {
         //        Date d = dueBack.getTime();
         //        gTemp.setTime(d);
 
-        gTemp = (GregorianCalendar) dueBack.clone();     //  gTemp = dueBack;  does not work!!
-       // gTemp.add(Calendar.DATE, -1);             // this subtracts one day from gTemp
+        gTemp = (GregorianCalendar) dueBack.clone();
+        // gTemp.add(Calendar.DATE, -1);             // this subtracts one day from gTemp
 
         // these lines will help with debugging
         DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -76,11 +118,11 @@ public class Game extends Rental {
             gTemp.add(Calendar.DATE, -1);
         }
         if(getConsole() == null){
-                cost = cost;
+            cost = cost;
         }
         if (getConsole() != null ) {
-                this.console.setRentedOn(rentedOn);
-                cost += this.console.getCost(dueBack);
+            this.console.setRentedOn(rentedOn);
+            cost += this.console.getCost(dueBack);
         }
         //This is the extra credit where you can captialize name
         //must also have in Console.java getCost()
@@ -91,6 +133,10 @@ public class Game extends Rental {
         return cost;
     }
 
+    /**
+     * A method to set up the string
+     * @return a string
+     */
     @Override
     public String toString() {
         return "Game{" +
